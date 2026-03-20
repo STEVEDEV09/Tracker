@@ -11,43 +11,50 @@ const io = socketIo(server, {
 
 let activeUsers = {};
 
-// Favicon 404 fix
+// Favicon fix
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
-app.use(express.static('public'));
+// IMPORTANT: Static files serve karo
+app.use(express.static(path.join(__dirname, 'public')));
 
+// IMPORTANT: Root route - index.html serve karo
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Agar koi aur route ho to bhi index.html bhejo (SPA support)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 io.on('connection', (socket) => {
-    console.log('🟢 New user connected:', socket.id);
+    console.log('🟢 User connected:', socket.id);
+    io.emit('user-count', Object.keys(activeUsers).length);
     
     socket.on('update-location', (data) => {
         activeUsers[socket.id] = {
             userId: data.userId,
             lat: data.lat,
             lng: data.lng,
-            socketId: socket.id,
-            lastUpdate: new Date()
+            socketId: socket.id
         };
         
-        console.log(`📍 User ${data.userId}: ${data.lat}, ${data.lng}`);
         socket.broadcast.emit('user-moved', activeUsers[socket.id]);
         socket.emit('all-users', Object.values(activeUsers));
+        io.emit('user-count', Object.keys(activeUsers).length);
     });
     
     socket.on('disconnect', () => {
-        console.log('🔴 User disconnected:', socket.id);
         if(activeUsers[socket.id]) {
             io.emit('user-left', activeUsers[socket.id].userId);
             delete activeUsers[socket.id];
+            io.emit('user-count', Object.keys(activeUsers).length);
         }
     });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`\n🚀 Server: http://localhost:${PORT}`);
-    console.log('=================================\n');
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📍 Open: http://localhost:${PORT}`);
 });
