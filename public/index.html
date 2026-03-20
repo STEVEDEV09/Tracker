@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Live Tracker</title>
+    
+    <!-- Favicon 404 fix - browser ko icon nahi dhundhna -->
+    <link rel="icon" href="data:,">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="map"></div>
+    
+    <div class="info-panel">
+        <div class="online-count">
+            🟢 Online: <span id="user-count">0</span>
+        </div>
+        <div id="gps-status">
+            📡 Getting location...
+        </div>
+        <div class="coords" id="coords">
+            Latitude: -- | Longitude: --
+        </div>
+        <div class="accuracy" id="accuracy">
+            Accuracy: --
+        </div>
+        <div class="instructions">
+            💡 Open on multiple devices to see each other
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
